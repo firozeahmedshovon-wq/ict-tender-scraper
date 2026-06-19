@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+debug_site.py
+*.png

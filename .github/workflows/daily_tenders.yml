@@ -1,0 +1,44 @@
+name: Daily ICT Tender Scraper
+
+on:
+  schedule:
+    - cron: '0 2 * * *'   # 2:00 AM UTC = 8:00 AM Bangladesh Time (BST = UTC+6)
+  workflow_dispatch:        # allows manual trigger from GitHub UI
+
+jobs:
+  scrape-and-notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Playwright Chromium
+        run: |
+          playwright install chromium
+          playwright install-deps chromium
+
+      - name: Run tender scraper
+        env:
+          EGP_USERNAME: ${{ secrets.EGP_USERNAME }}
+          EGP_PASSWORD: ${{ secrets.EGP_PASSWORD }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python tender_scraper.py
+
+      - name: Save sent log back to repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add sent_tenders.json || true
+          git add ict_tenders_*.csv || true
+          git diff --staged --quiet || git commit -m "chore: update sent log $(date +'%Y-%m-%d')"
+          git push
