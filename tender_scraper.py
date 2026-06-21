@@ -93,6 +93,16 @@ EXCLUSION_TERMS = [
     " erplc",
 ]
 
+# Hardware-only tenders to exclude (word-boundary matched against lowercase title)
+HARDWARE_EXCLUSION_PATTERNS = [
+    r"\bdesktop\b",
+    r"\bcomputer\b",
+    r"\bups\b",
+    r"laser printer",
+    r"cc camera",
+    r"\bserver\b",
+]
+
 TODAY = datetime.now().date()
 OUTPUT_FILE = f"ict_tenders_{TODAY}.csv"
 RESULTS_PER_PAGE = 50
@@ -104,6 +114,8 @@ def title_matches(title: str) -> bool:
     if any(t.startswith(p) for p in CIVIL_PREFIXES):
         return False
     if any(ex in t for ex in EXCLUSION_TERMS):
+        return False
+    if any(re.search(pat, t) for pat in HARDWARE_EXCLUSION_PATTERNS):
         return False
     for kw in TITLE_KEYWORDS:
         if kw == "erp":
@@ -136,8 +148,21 @@ def save_sent_log(sent: set):
 
 
 # ── Telegram helpers ───────────────────────────────────────────────────────────
+def extract_ministry(org: str) -> str:
+    parts = [p.strip() for p in org.split("|") if p.strip()]
+    return parts[0] if parts else org
+
+
+def extract_organization(org: str) -> str:
+    parts = [p.strip() for p in org.split("|") if p.strip()]
+    if len(parts) >= 3:
+        return parts[-2]
+    elif len(parts) == 2:
+        return parts[0]
+    return parts[0] if parts else org
+
+
 def extract_pe(org: str) -> str:
-    """Return the Procuring Entity (last meaningful part of the org chain)."""
     parts = [p.strip() for p in org.split("|") if p.strip()]
     return parts[-1] if parts else org
 
@@ -154,19 +179,25 @@ def notice_link(tender_id: str) -> str:
 
 
 def format_telegram_message(r: dict) -> str:
-    title    = r["Title"].strip()
-    pe       = extract_pe(r["Organisation"])
-    closing  = r["Closing Date"]
-    days     = r["Days Left"]
-    t_type   = tender_type_label(r["Type / Method"])
-    link     = notice_link(r["Tender ID"])
+    title     = r["Title"].strip()
+    ministry  = extract_ministry(r["Organisation"])
+    org_name  = extract_organization(r["Organisation"])
+    pe        = extract_pe(r["Organisation"])
+    closing   = r["Closing Date"]
+    days      = r["Days Left"]
+    t_type    = tender_type_label(r["Type / Method"])
+    link      = notice_link(r["Tender ID"])
+    tender_id = r["Tender ID"]
 
     urgency = "🔴" if int(days) <= 3 else "🟡" if int(days) <= 7 else "🟢"
 
     return (
         f"{urgency} <b>ICT Tender Notice</b>\n\n"
         f"📌 <b>Title:</b> {title}\n\n"
-        f"🏛 <b>Authority:</b> {pe}\n\n"
+        f"🏛 <b>Ministry:</b> {ministry}\n\n"
+        f"🏢 <b>Organization:</b> {org_name}\n\n"
+        f"👤 <b>Authority (PE):</b> {pe}\n\n"
+        f"🆔 <b>Tender ID:</b> {tender_id}\n\n"
         f"📅 <b>Closing Date:</b> {closing}  ({days} day(s) left)\n\n"
         f"🏷 <b>Type:</b> {t_type}\n\n"
         f"🔗 <b>Notice Link:</b> {link}"
