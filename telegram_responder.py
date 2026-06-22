@@ -184,14 +184,20 @@ def main():
         # Support both group messages and channel posts
         msg = update.get("message") or update.get("channel_post")
         if not msg:
+            print(f"  [skip] update_id={update['update_id']} keys={list(update.keys())}")
             continue
 
         text = msg.get("text", "")
+        sender = msg.get("from", {}).get("first_name", "?")
+        chat_type = msg.get("chat", {}).get("type", "?")
+        print(f"  [msg] id={msg.get('message_id')} from={sender!r} chat={chat_type!r} text={text[:80]!r}")
+
         if not text:
             continue
 
         tl = text.lower()
         if not any(trigger in tl for trigger in TRIGGERS):
+            print(f"  [skip] no trigger in: {text[:60]!r}")
             continue
 
         chat_id    = msg["chat"]["id"]
