@@ -1,9 +1,9 @@
-name: Daily ICT Tender Scraper
+name: ICT Tender Scraper (manual only — VPS runs hourly)
 
+# Schedule disabled: scraper now runs hourly on VPS via cron.
+# Keep workflow_dispatch for emergency manual runs from GitHub UI.
 on:
-  schedule:
-    - cron: '0 2 * * *'   # 2:00 AM UTC = 8:00 AM Bangladesh Time (BST = UTC+6)
-  workflow_dispatch:        # allows manual trigger from GitHub UI
+  workflow_dispatch:
 
 jobs:
   scrape-and-notify:
@@ -36,11 +36,10 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python tender_scraper.py
 
-      - name: Save sent log back to repo
+      - name: Save CSV back to repo
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add sent_tenders.json || true
           git add ict_tenders_*.csv || true
-          git diff --staged --quiet || git commit -m "chore: update sent log $(date +'%Y-%m-%d')"
+          git diff --staged --quiet || git commit -m "chore: save CSV $(date +'%Y-%m-%d')"
           git push
