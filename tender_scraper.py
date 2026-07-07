@@ -114,6 +114,11 @@ EXCLUSION_TERMS = [
     "lan/wan",
     "wan, ip",
     "manpower for ships", "manpower for vessel",
+
+    # ── Textile / industrial machinery (contain "software" but are not ICT) ───────
+    "machineries and equipment for yarn", "yarn engineering",
+    "fabric engineering", "wet process engineering",
+    "textile engineering college", "textile institute",
 ]
 
 # Hardware-only tenders to exclude (word-boundary matched against lowercase title)
