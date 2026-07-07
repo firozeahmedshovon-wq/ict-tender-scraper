@@ -85,15 +85,34 @@ EXCLUSION_TERMS = [
     "manpower service", "outsourcing service (front", "outsourcing manpower",
     "driver, mlss", "driver,mlss", "driver and mlss",
     " erplc",
-    # Medical / non-ICT equipment
+
+    # ── CCTV / Surveillance ─────────────────────────────────────────────────────
+    "cctv", "cc tv", "cctv camera", "cctv system",
+    "ip camera", "ip surveillance", "surveillance camera", "security camera",
+
+    # ── Medical equipment ───────────────────────────────────────────────────────
     "videoscope", "laryngoscope", "pleuroscope", "endoscope", "colonoscope",
     "bronchoscope", "gastroscope", "cystoscope", "otoscope",
     "ultrasound", "x-ray", "mri", "ct scan",
-    # Non-ICT hardware/infrastructure
-    "cctv", "cc tv", "ip camera", "ip surveillance", "surveillance camera",
-    "security camera", "cctv camera", "cctv system",
-    "intercom system", "pabx", "walkie talkie",
+
+    # ── Hardware supply (non-software) ──────────────────────────────────────────
+    "laptops and printers", "laptop and printer",
+    "intercom", "pabx", "walkie talkie",
     "cutting plotter", "3d foot scanner",
+
+    # ── License / renewal (not software development) ────────────────────────────
+    "oracle",          # Oracle license procurement — not bidding territory
+    "renewal of ",     # License/subscription renewals
+    "renewing of ",
+
+    # ── IT Support / staffing (not development) ─────────────────────────────────
+    "it support",      # IT support service contracts (manpower-based)
+    "it support service",
+
+    # ── Network hardware / infrastructure ───────────────────────────────────────
+    "lan, wan",        # LAN/WAN infrastructure contracts
+    "lan/wan",
+    "wan, ip",
     "manpower for ships", "manpower for vessel",
 ]
 
