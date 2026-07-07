@@ -119,6 +119,11 @@ EXCLUSION_TERMS = [
     "machineries and equipment for yarn", "yarn engineering",
     "fabric engineering", "wet process engineering",
     "textile engineering college", "textile institute",
+
+    # ── Hardware / device supply (not software development) ──────────────────────
+    "equipment",    # ICT Equipment, Networking Equipment, etc. — hardware supply
+    "projector",    # AV hardware
+    "ddos",         # Security appliance supply (Anti-DDoS devices)
 ]
 
 # Hardware-only tenders to exclude (word-boundary matched against lowercase title)
